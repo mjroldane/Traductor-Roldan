@@ -1,8 +1,3 @@
-Entendido, no te preocupes. He corregido la extensión del archivo de imagen en el código. Ahora busca personas hablando.jpg en lugar de la extensión .JPEG.
-
-Aquí tienes el código actualizado:
-
-Python
 import os
 import streamlit as st
 from bokeh.models.widgets import Button
