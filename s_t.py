@@ -1,45 +1,56 @@
 import streamlit as st
-import streamlit.components.v1 as components
+from speech_recognition import Recognizer, Microphone, UnknownValueError, RequestError
 
-# Título de la pestaña en el navegador
-st.set_page_config(page_title="Traductor Divertido")
+# Configuración visual divertida
+st.set_page_config(page_title="Traductor Mágico", page_icon="🗣️")
 
-# Definimos el código HTML/JS como un bloque de texto
-codigo_interactivo = """
-<div id="app-container" style="text-align: center; font-family: sans-serif; background: #fdfcf0; padding: 25px; border-radius: 20px; border: 4px solid #FFD700;">
-    
-    <h1 id="titulo" style="color: #FF4B4B;">¡Hola, mundo de los idiomas! 🌍</h1>
-    
-    <img id="imagen-principal" src="https://cdn-icons-png.flaticon.com/512/3050/3050525.png" alt="Gente charlando" style="width: 150px; border-radius: 20px; margin: 15px 0;">
+st.title("¡Hablemos con el Mundo! 🌍")
+st.image("personas hablando.JPEG", caption="¡Dime algo y lo escribiré!")
 
-    <p id="mensaje-guia" style="font-size: 1.2em; font-weight: bold;">¿Cómo quieres que nos saludemos hoy?</p>
+# Diccionario de idiomas para el reconocimiento
+idiomas = {
+    "Español 🇪🇸": "es-ES",
+    "Français 🇫🇷": "fr-FR",
+    "Deutsch 🇩🇪": "de-DE",
+    "Русский 🇷🇺": "ru-RU"
+}
 
-    <div id="botonera" style="display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;">
-        <button onclick="cambiarIdioma('es')" style="cursor:pointer; padding: 10px; border-radius: 10px; border:none; background:#eee;">Español 🇪🇸</button>
-        <button onclick="cambiarIdioma('fr')" style="cursor:pointer; padding: 10px; border-radius: 10px; border:none; background:#eee;">Français 🇫🇷</button>
-        <button onclick="cambiarIdioma('de')" style="cursor:pointer; padding: 10px; border-radius: 10px; border:none; background:#eee;">Deutsch 🇩🇪</button>
-        <button onclick="cambiarIdioma('ru')" style="cursor:pointer; padding: 10px; border-radius: 10px; border:none; background:#eee;">Русский 🇷🇺</button>
-    </div>
-</div>
+# Selección de idioma con un tono amigable
+seleccion = st.selectbox("¿En qué idioma vas a hablarme hoy?", list(idiomas.keys()))
+lang_code = idiomas[seleccion]
 
-<script>
-    const traducciones = {
-        'es': { titulo: "¡Hola, mundo!", guia: "¡Qué bueno verte!", color: "#FF4B4B" },
-        'fr': { titulo: "Salut tout le monde! 🥐", guia: "C'est super de vous voir !", color: "#0055A4" },
-        'de': { titulo: "Hallo an alle! 🥨", guia: "Schön, dich hier zu sehen!", color: "#FFCE00" },
-        'ru': { titulo: "Привет всем! 🇷🇺", guia: "Рад вас видеть!", color: "#D52B1E" }
-    };
+if st.button(f"🚀 ¡Empezar a escuchar en {seleccion}!"):
+    r = Recognizer()
+    with Microphone() as source:
+        st.write("### 🎧 Escuchando... ¡Dilo con ganas!")
+        # Ajuste para ruido ambiental
+        r.adjust_for_ambient_noise(source)
+        audio = r.listen(source)
+        
+        try:
+            # Traduciendo voz a texto
+            texto_detectado = r.recognize_google(audio, language=lang_code)
+            
+            # Interfaz divertida para mostrar el resultado
+            st.success(f"**Lo que entendí fue:**")
+            st.balloons() # ¡Efecto divertido de globos!
+            st.markdown(f"> # {texto_detectado}")
+            
+        except UnknownValueError:
+            st.error("¡Ups! No logré entender lo que dijiste. ¿Podrías repetirlo más claro?")
+        except RequestError:
+            st.warning("Parece que tengo problemas de conexión. Verifica tu internet.")
 
-    function cambiarIdioma(lang) {
-        const info = traducciones[lang];
-        document.getElementById('titulo').innerText = info.titulo;
-        document.getElementById('mensaje-guia').innerText = info.guia;
-        document.getElementById('app-container').style.borderColor = info.color;
-        document.getElementById('titulo').style.color = info.color;
+# Estilo extra con CSS para que se vea más colorido
+st.markdown("""
+    <style>
+    .stButton>button {
+        background-color: #ff4b4b;
+        color: white;
+        border-radius: 20px;
+        height: 3em;
+        width: 100%;
+        font-weight: bold;
     }
-</script>
-"""
-
-# Renderizamos el HTML en Streamlit
-components.html(codigo_interactivo, height=500)
-
+    </style>
+    """, unsafe_allow_config=True)
