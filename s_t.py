@@ -14,11 +14,11 @@ st.title("TRADUCTOR.")
 st.subheader("Escucho lo que quieres traducir.")
 
 # Cambio de imagen solicitado y corregido
-try:
-    image = Image.open('personas hablando.jpg') # Corrección de la extensión aquí
-    st.image(image, width=300)
-except:
-    st.warning("No se encontró el archivo 'personas hablando.jpg'. Asegúrate de que esté en la misma carpeta.")
+# try:
+  #  image = Image.open('personas hablando.jpg') # Corrección de la extensión aquí
+  #  st.image(image, width=300)
+#except:
+   # st.warning("No se encontró el archivo 'personas hablando.jpg'. Asegúrate de que esté en la misma carpeta.")
 
 with st.sidebar:
     st.subheader("Traductor.")
