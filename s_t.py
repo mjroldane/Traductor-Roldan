@@ -1,50 +1,94 @@
 import streamlit as st
 import speech_recognition as sr
 
-# Configuración de página
-st.set_page_config(page_title="Traductor Divertido", page_icon="🎙️")
+# 1. Configuración de la página y Estilo Visual (CSS)
+st.set_page_config(page_title="Traductor Mágico", page_icon="🎙️", layout="centered")
 
-# Título y Estética
-st.markdown("<h1 style='text-align: center; color: #FF4B4B;'>🌍 ¡Hablemos con el Mundo!</h1>", unsafe_allow_html=True)
+st.markdown("""
+    <style>
+    .main {
+        background-color: #f8f9fa;
+    }
+    .stButton>button {
+        width: 100%;
+        border-radius: 25px;
+        height: 3em;
+        background-color: #FF4B4B;
+        color: white;
+        font-weight: bold;
+        border: none;
+        transition: 0.3s;
+    }
+    .stButton>button:hover {
+        background-color: #ff7575;
+        transform: scale(1.02);
+    }
+    .title-text {
+        text-align: center;
+        color: #1E1E1E;
+        font-family: 'Helvetica', sans-serif;
+    }
+    </style>
+    """, unsafe_allow_html=True)
 
-# Imagen de personas hablando
+# 2. Interfaz de Usuario
+st.markdown("<h1 class='title-text'>🌍 ¡Traductor de Voz Pro!</h1>", unsafe_allow_html=True)
+
+# Imagen personalizada
 try:
     st.image("personas hablando.JPEG", use_container_width=True)
 except:
-    st.warning("⚠️ Asegúrate de subir 'personas hablando.JPEG' a tu carpeta de GitHub.")
+    st.info("💡 Consejo: Sube la imagen 'personas hablando.JPEG' para que aparezca aquí.")
 
-# Selección de idioma
+st.markdown("---")
+
+# 3. Configuración de Idiomas
 idiomas = {
     "Español 🇪🇸": "es-ES",
-    "Français 🇫🇷": "fr-FR",
-    "Deutsch 🇩🇪": "de-DE",
-    "Русский 🇷🇺": "ru-RU"
+    "Francés 🇫🇷": "fr-FR",
+    "Alemán 🇩🇪": "de-DE",
+    "Ruso 🇷🇺": "ru-RU"
 }
 
-seleccion = st.selectbox("¿En qué idioma quieres hablar?", list(idiomas.keys()))
+col1, col2 = st.columns([1, 2])
+with col1:
+    seleccion = st.selectbox("Tu idioma:", list(idiomas.keys()))
 
-# Botón interactivo
-if st.button(f"🚀 ¡Empezar a escuchar!"):
+with col2:
+    st.write(" ") # Espaciador
+    st.write(f"Seleccionaste: **{seleccion}**")
+
+# 4. Lógica de Reconocimiento de Voz
+if st.button("🎤 ¡PRESIONA PARA HABLAR!"):
     r = sr.Recognizer()
     
-    # Intentar usar el micrófono
-    try:
-        with sr.Microphone() as source:
-            st.info("🎧 Te escucho... ¡Habla ahora!")
+    with sr.Microphone() as source:
+        st.toast("Ajustando ruido ambiental...")
+        r.adjust_for_ambient_noise(source, duration=1)
+        st.warning("🎧 Escuchando ahora... ¡Di algo!")
+        
+        try:
+            # Captura el audio
             audio = r.listen(source, timeout=5)
-            
-            # Procesar voz a texto
+            # Convierte a texto
             texto = r.recognize_google(audio, language=idiomas[seleccion])
             
-            # Mostrar resultado divertido
-            st.success("¡Te entendí perfectamente!")
+            # Resultado divertido
+            st.success("✅ ¡Te entendí!")
             st.balloons()
-            st.markdown(f"### Lo que dijiste fue:\n> **{texto}**")
             
-    except sr.RequestError:
-        st.error("Error de conexión con el servicio de voz.")
-    except sr.UnknownValueError:
-        st.error("No logré entender el audio. ¡Inténtalo de nuevo!")
-    except Exception as e:
-        st.error(f"Error técnico: {e}")
-        st.info("Nota: Si estás en la web, Streamlit Cloud requiere permisos de micrófono en tu navegador.")
+            st.markdown(f"""
+            <div style="background-color: white; padding: 20px; border-radius: 15px; border-left: 5px solid #FF4B4B; box-shadow: 2px 2px 10px rgba(0,0,0,0.1);">
+                <p style="color: gray; margin-bottom: 5px;">Dijiste:</p>
+                <h2 style="margin-top: 0;">"{texto}"</h2>
+            </div>
+            """, unsafe_allow_html=True)
+            
+        except sr.UnknownValueError:
+            st.error("❌ No pude entender el audio. Intenta hablar más claro o cerca del micro.")
+        except sr.RequestError:
+            st.error("❌ Error de conexión. Revisa tu internet.")
+        except Exception as e:
+            st.error(f"Hubo un problema: {e}")
+
+st.markdown("<p style='text-align: center; color: gray; font-size: 0.8em;'>Recuerda dar permisos de micrófono en tu navegador</p>", unsafe_allow_html=True)
