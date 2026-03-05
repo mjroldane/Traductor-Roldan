@@ -1,3 +1,8 @@
+Entendido, no te preocupes. He corregido la extensión del archivo de imagen en el código. Ahora busca personas hablando.jpg en lugar de la extensión .JPEG.
+
+Aquí tienes el código actualizado:
+
+Python
 import os
 import streamlit as st
 from bokeh.models.widgets import Button
@@ -13,12 +18,12 @@ from googletrans import Translator
 st.title("TRADUCTOR.")
 st.subheader("Escucho lo que quieres traducir.")
 
-# Cambio de imagen solicitado
+# Cambio de imagen solicitado y corregido
 try:
-    image = Image.open('personas hablando.JPEG')
+    image = Image.open('personas hablando.jpg') # Corrección de la extensión aquí
     st.image(image, width=300)
 except:
-    st.warning("No se encontró el archivo 'personas hablando.JPEG'. Asegúrate de que esté en la misma carpeta.")
+    st.warning("No se encontró el archivo 'personas hablando.jpg'. Asegúrate de que esté en la misma carpeta.")
 
 with st.sidebar:
     st.subheader("Traductor.")
